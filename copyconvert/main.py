@@ -2,6 +2,7 @@ import argparse
 import cloudconvert
 from dotenv import load_dotenv
 import logging
+import multiprocessing.dummy as mp
 import os
 from shutil import copyfile
 import sys
@@ -11,10 +12,10 @@ from validate import validate_args
 
 
 def main(src, dest, conversions, skips):
-    # for each filepath, if skip, continue, otherwise (convert and) copy
     success = []
     fail = []
-    for line in sys.stdin.readlines():
+
+    def copyconvert(line):
         fp = line.strip()
         # skip current file if filepath matches any of the given regex
         skip = True in [s in fp for s in skips]
@@ -34,11 +35,12 @@ def main(src, dest, conversions, skips):
             # skip file if it exists in destination folder
             if os.path.exists(abs_path):
                 print(f'{abs_path} already exists!')
-                continue
+                return
 
             if ori_ext[1:] in conversions:
-                print(f'Converting {fp} to {ext}')
-                fp = convert(fp, ext)
+                print(f'Converting {fp} to {ext[1:]}')
+                fp = convert(fp, ext[1:])
+                print(f'Converted {fp} to {ext[1:]}')
 
             # create folders if they dont exist
             os.makedirs(os.path.dirname(abs_path), exist_ok=True)
@@ -47,6 +49,14 @@ def main(src, dest, conversions, skips):
             copyfile(fp, abs_path)
             logging.debug(f'Transferred {ori_fp} to {abs_path}')
             success.append(abs_path)
+
+    lines = sys.stdin.readlines()
+
+    # Multithread
+    p = mp.Pool(10)
+    p.map(copyconvert, lines)
+    p.close()
+    p.join()
 
     # dump failed conversions to stderr log and a file
     if len(fail) > 0:
