@@ -11,7 +11,8 @@ further conversions will cause an error.
 
 This tool has a very specific usecase: to copy, and convert files downloaded
 via [fluminurs](https://github.com/indocomsoft/fluminurs) into my DropBox folder,
-as I realise I waste a lot of time manually copying files over. 
+as I realise I waste a lot of time manually copying files over and converting them
+one by one. 
 
 ## Setup
 Requires pipenv and python 3.6

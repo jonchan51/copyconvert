@@ -25,7 +25,7 @@ def _get_valid_conversions():
 
 def _validate_dir(directory: str):
     """
-    Ensure given directory exists. 
+    Ensure given directory exists.
     We only create subdirectories, so the main directory should be present.
     """
     if not os.path.isdir(directory):
@@ -57,4 +57,5 @@ def _validate_conversions(conversions):
 def validate_args(args):
     _validate_dir(args.src)
     _validate_dir(args.dest)
-    _validate_conversions(args.conversions)
+    if args.conversions:
+        _validate_conversions(args.conversions)

@@ -1,19 +1,17 @@
 import argparse
 import cloudconvert
 from dotenv import load_dotenv
-from functools import reduce
 import logging
 import os
 from shutil import copyfile
 import sys
 
 from convert import convert
-from validate import validate_args, _get_valid_conversions
-from utils import _combine_dict
+from validate import validate_args
 
 
 def main(src, dest, conversions, skips):
-    # for each filepath, if skip, continue, otherwise (convert and) transfer
+    # for each filepath, if skip, continue, otherwise (convert and) copy
     success = []
     fail = []
     for line in sys.stdin.readlines():
@@ -49,10 +47,23 @@ def main(src, dest, conversions, skips):
             copyfile(fp, abs_path)
             logging.debug(f'Transferred {ori_fp} to {abs_path}')
             success.append(abs_path)
-    print(f'Finished transferring all files to {dest}')
-    # alternatively, no files transferred msg
+
     # dump failed conversions to stderr log and a file
-    # list all files transferred
+    if len(fail) > 0:
+        pass
+
+    if len(success) == 0:
+        print('No files were transferred.')
+    else:
+        print(f'Finished transferring all files to {dest}')
+        print('==============================================')
+        print('             Transferred files                ')
+        print('==============================================')
+        # list all files transferred
+        success.sort()
+        # Can consider pretty printing
+        for fp in success:
+            print(fp)
 
 
 if __name__ == '__main__':
@@ -80,10 +91,15 @@ if __name__ == '__main__':
                         metavar='string',
                         dest='skips',
                         action='append')
+    parser.add_argument('-l', '--log',
+                        help='Indicate logging level',
+                        default='ERROR',
+                        dest='loglevel',
+                        choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'])
 
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=getattr(logging, args.loglevel))
 
     load_dotenv()
     cloudconvert.configure(api_key=os.getenv('CLOUDCONVERT_API_KEY'))
@@ -91,7 +107,8 @@ if __name__ == '__main__':
     validate_args(args)
 
     conversions = dict()
-    for c in args.conversions:
-        conversions[c[0]] = c[1]
+    if args.conversions:
+        for c in args.conversions:
+            conversions[c[0]] = c[1]
 
     main(args.src, args.dest, conversions, args.skips)
