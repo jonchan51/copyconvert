@@ -9,8 +9,7 @@ valid_conversions = None
 
 
 def _get_valid_conversions():
-    """
-    GET supported conversion formats from CloudConvert
+    """GET supported conversion formats from CloudConvert
     """
     global valid_conversions
     if valid_conversions:
@@ -24,8 +23,8 @@ def _get_valid_conversions():
 
 
 def _validate_dir(directory: str):
-    """
-    Ensure given directory exists.
+    """Ensure given directory exists.
+
     We only create subdirectories, so the main directory should be present.
     """
     if not os.path.isdir(directory):
@@ -33,8 +32,7 @@ def _validate_dir(directory: str):
 
 
 def _validate_conversion(source: str, dest: str):
-    """
-    Ensure given combination is a valid conversion supported by CloudConvert
+    """Ensure given combination is a valid conversion supported by CloudConvert
     """
     conversions = _get_valid_conversions()
     if source not in conversions or dest not in conversions[source]:
@@ -42,8 +40,7 @@ def _validate_conversion(source: str, dest: str):
 
 
 def _validate_conversions(conversions):
-    """
-    Ensure given combinations are a valid conversion supported by CloudConvert
+    """Ensure given combinations are a valid conversion supported by CloudConvert
     and each input format given is unique.
     """
     seen = set()

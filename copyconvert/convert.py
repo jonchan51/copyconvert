@@ -46,8 +46,7 @@ def _download_file(job):
 
 
 def convert(fp, output_format):
-    """
-    Converts given file to output_format.
+    """Converts given file to output_format.
     """
     logging.debug(f'Attempting to convert {fp} to {output_format}')
     job = _create_convert_job(output_format)

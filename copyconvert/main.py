@@ -39,7 +39,7 @@ def main(src, dest, conversions, skips):
 
             if ori_ext[1:] in conversions:
                 print(f'Converting {fp} to {ext[1:]}')
-                fp = convert(fp, ext[1:])
+                convert(fp, ext[1:])
                 print(f'Converted {fp} to {ext[1:]}')
 
             # create folders if they dont exist
@@ -53,7 +53,7 @@ def main(src, dest, conversions, skips):
     lines = sys.stdin.readlines()
 
     # Multithread
-    p = mp.Pool(10)
+    p = mp.Pool(3)
     p.map(copyconvert, lines)
     p.close()
     p.join()
